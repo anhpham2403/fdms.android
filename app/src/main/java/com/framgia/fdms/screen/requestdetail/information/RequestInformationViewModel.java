@@ -11,11 +11,8 @@ import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
-
 import com.framgia.fdms.BR;
 import com.framgia.fdms.R;
-import com.framgia.fdms.data.anotation.Permission;
-import com.framgia.fdms.data.anotation.RequestStatus;
 import com.framgia.fdms.data.model.Request;
 import com.framgia.fdms.data.model.Respone;
 import com.framgia.fdms.data.model.Status;
@@ -27,7 +24,6 @@ import com.framgia.fdms.screen.selection.SelectionType;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.yarolegovich.lovelydialog.LovelyTextInputDialog;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +51,7 @@ import static com.github.clans.fab.FloatingActionButton.SIZE_MINI;
  * Created by tuanbg on 5/24/17.
  */
 public class RequestInformationViewModel extends BaseObservable
-        implements RequestInformationContract.ViewModel {
+    implements RequestInformationContract.ViewModel {
     private Context mContext;
     private Fragment mFragment;
     private boolean mIsEdit;
@@ -74,9 +70,8 @@ public class RequestInformationViewModel extends BaseObservable
     private boolean mIsShowRequestForAndAssignee;
 
     public RequestInformationViewModel(Fragment fragment, List<Request.RequestAction> actions,
-                                       String statusRequest, Request actionRequest,
-                                       FloatingActionMenu floatingActionMenu,
-                                       OnRequestUpdateSuccessListenner listenner) {
+        String statusRequest, Request actionRequest, FloatingActionMenu floatingActionMenu,
+        OnRequestUpdateSuccessListenner listenner) {
         mContext = fragment.getContext();
         mFragment = fragment;
         setRequest(actionRequest);
@@ -100,7 +95,7 @@ public class RequestInformationViewModel extends BaseObservable
     @Override
     public void onLoadError(String message) {
         Snackbar.make(mFragment.getActivity().findViewById(android.R.id.content), message,
-                Snackbar.LENGTH_LONG).show();
+            Snackbar.LENGTH_LONG).show();
     }
 
     @Bindable
@@ -162,8 +157,8 @@ public class RequestInformationViewModel extends BaseObservable
                 Activity activity = mFragment.getActivity();
                 Intent intent = new Intent();
                 activity.setResult(RESULT_OK, intent);
-                activity.startActivity(RequestDetailActivity.getInstance(
-                        mFragment.getContext(), mRequest.getId()));
+                activity.startActivity(
+                    RequestDetailActivity.getInstance(mFragment.getContext(), mRequest.getId()));
                 activity.finish();
                 break;
             default:
@@ -182,8 +177,8 @@ public class RequestInformationViewModel extends BaseObservable
             return;
         }
         mFragment.startActivityForResult(
-                SelectionActivity.newInstance(mContext, EDIT_STATUS_REQUEST,
-                        mRequest.getRequestStatusId()), REQUEST_STATUS);
+            SelectionActivity.newInstance(mContext, EDIT_STATUS_REQUEST,
+                mRequest.getRequestStatusId()), REQUEST_STATUS);
     }
 
     public void onClickChooseRequestForRelativeStaff() {
@@ -191,13 +186,13 @@ public class RequestInformationViewModel extends BaseObservable
             return;
         }
         mFragment.startActivityForResult(
-                SelectionActivity.getInstance(mContext, SelectionType.RELATIVE_STAFF),
-                REQUEST_RELATIVE);
+            SelectionActivity.getInstance(mContext, SelectionType.RELATIVE_STAFF),
+            REQUEST_RELATIVE);
     }
 
     public void onClickAssignee() {
         mFragment.startActivityForResult(
-                SelectionActivity.getInstance(mContext, SelectionType.ASSIGNEE), REQUEST_ASSIGNEE);
+            SelectionActivity.getInstance(mContext, SelectionType.ASSIGNEE), REQUEST_ASSIGNEE);
     }
 
     @Override
@@ -223,12 +218,12 @@ public class RequestInformationViewModel extends BaseObservable
         if (mRequest.getRequestStatusId() == DONE) {
             return;
         }
-
-        Request.RequestAction editAction = new Request().new RequestAction();
-        editAction.setId(EDIT);
-        editAction.setName(mContext.getString(R.string.action_edit));
-        mListAction.add(editAction);
-
+        if (isAllowEditAction(mUser, mRequest)) {
+            Request.RequestAction editAction = new Request().new RequestAction();
+            editAction.setId(EDIT);
+            editAction.setName(mContext.getString(R.string.action_edit));
+            mListAction.add(editAction);
+        }
         if (isAllowAssignDevice(mUser.getRole(), mRequest)) {
             Request.RequestAction assignAction = new Request().new RequestAction();
             assignAction.setId(ASSIGNMENT);
@@ -275,7 +270,20 @@ public class RequestInformationViewModel extends BaseObservable
 
     public boolean isAllowAssignDevice(String permision, Request request) {
         return (permision.equals(BO_MANAGER) || permision.equals(BO_STAFF))
-                && request.getRequestStatusId() == WAITING_DONE;
+            && request.getRequestStatusId() == WAITING_DONE;
+    }
+
+    public boolean isAllowEditAction(User user, Request request) {
+        switch (request.getRequestStatusId()) {
+            case CANCELLED:
+            case WAITING_DONE:
+                return (user.getRole().equals(BO_MANAGER) && user.getName()
+                    .equals(request.getCreater()));
+            case APPROVED:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -283,32 +291,32 @@ public class RequestInformationViewModel extends BaseObservable
         switch (actionId) {
             case ASSIGNMENT:
                 mFragment.startActivityForResult(
-                        AssignmentActivity.getInstance(mContext, ASSIGN_BY_REQUEST,
-                                mRequest.getId()), REQUEST_CREATE_ASSIGNMENT);
+                    AssignmentActivity.getInstance(mContext, ASSIGN_BY_REQUEST, mRequest.getId()),
+                    REQUEST_CREATE_ASSIGNMENT);
                 break;
             case EDIT:
                 initEditRequest();
                 break;
             case CANCELLED:
                 new LovelyTextInputDialog(mContext).setTopColorRes(R.color.colorPrimary)
-                        .setTitle(R.string.msg_cancel_request)
-                        .setIcon(R.drawable.ic_error_white)
-                        .setConfirmButton(android.R.string.ok,
-                                new LovelyTextInputDialog.OnTextInputConfirmListener() {
-                                    @Override
-                                    public void onTextInputConfirmed(String text) {
-                                        mPresenter.cancelRequest(requestId, actionId, text);
-                                    }
-                                })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setInputFilter(R.string.error_empty_description,
-                                new LovelyTextInputDialog.TextFilter() {
-                                    @Override
-                                    public boolean check(String s) {
-                                        return !TextUtils.isEmpty(s);
-                                    }
-                                })
-                        .show();
+                    .setTitle(R.string.msg_cancel_request)
+                    .setIcon(R.drawable.ic_error_white)
+                    .setConfirmButton(android.R.string.ok,
+                        new LovelyTextInputDialog.OnTextInputConfirmListener() {
+                            @Override
+                            public void onTextInputConfirmed(String text) {
+                                mPresenter.cancelRequest(requestId, actionId, text);
+                            }
+                        })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setInputFilter(R.string.error_empty_description,
+                        new LovelyTextInputDialog.TextFilter() {
+                            @Override
+                            public boolean check(String s) {
+                                return !TextUtils.isEmpty(s);
+                            }
+                        })
+                    .show();
                 break;
             default:
                 mPresenter.updateActionRequest(requestId, actionId);
@@ -331,7 +339,8 @@ public class RequestInformationViewModel extends BaseObservable
 
     @Override
     public void onUpdateActionSuccess(Respone<Request> requestRespone) {
-        Toast.makeText(mFragment.getContext(), R.string.msg_update_request_success, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mFragment.getContext(), R.string.msg_update_request_success,
+            Toast.LENGTH_SHORT).show();
         mListenner.onUpdateSuccessFull(requestRespone.getData().getId());
     }
 
@@ -343,15 +352,15 @@ public class RequestInformationViewModel extends BaseObservable
         setUser(user);
         initActionRequestMenu();
         setActionMenuVisibility(
-                mListAction != null && mListAction.size() > 0 ? View.VISIBLE : View.GONE);
-        setShowRequestForAndAssignee(mUser.getRole().equals(BO_MANAGER) ||
-                user.getRole().equals(BO_STAFF));
+            mListAction != null && mListAction.size() > 0 ? View.VISIBLE : View.GONE);
+        setShowRequestForAndAssignee(
+            mUser.getRole().equals(BO_MANAGER) || user.getRole().equals(BO_STAFF));
     }
 
     @Override
     public void onUploadRequestError(String message) {
         Snackbar.make(mFragment.getActivity().findViewById(android.R.id.content), message,
-                Snackbar.LENGTH_LONG).show();
+            Snackbar.LENGTH_LONG).show();
         onCancelEditClick();
     }
 

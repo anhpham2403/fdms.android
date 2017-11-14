@@ -68,7 +68,7 @@ public class RequestInformationPresenter implements RequestInformationContract.P
 
     @Override
     public void updateRequest(Request request) {
-        if (TextUtils.isEmpty(request.getTitle())){
+        if (TextUtils.isEmpty(request.getTitle())) {
             mViewModel.onRequestTitleEmpty();
             return;
         }

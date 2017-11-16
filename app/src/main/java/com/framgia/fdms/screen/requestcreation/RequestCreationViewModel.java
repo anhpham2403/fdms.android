@@ -22,6 +22,9 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static com.framgia.fdms.data.anotation.Permission.BO_MANAGER;
+import static com.framgia.fdms.data.anotation.Permission.DIVISION_MANAGER;
+import static com.framgia.fdms.data.anotation.Permission.GROUP_LEADER;
+import static com.framgia.fdms.data.anotation.Permission.SECTION_MANAGER;
 import static com.framgia.fdms.screen.selection.SelectionViewModel.BUNDLE_DATA;
 import static com.framgia.fdms.utils.Constant.NONE;
 import static com.framgia.fdms.utils.Constant.OUT_OF_INDEX;
@@ -33,7 +36,7 @@ import static com.framgia.fdms.utils.Constant.RequestConstant.REQUEST_RELATIVE;
  */
 
 public class RequestCreationViewModel extends BaseObservable
-        implements RequestCreationContract.ViewModel, AdapterView.OnItemSelectedListener {
+    implements RequestCreationContract.ViewModel, AdapterView.OnItemSelectedListener {
 
     private RequestCreationContract.Presenter mPresenter;
     private AppCompatActivity mActivity;
@@ -55,9 +58,10 @@ public class RequestCreationViewModel extends BaseObservable
     private boolean mIsManager;
     @RequestCreatorType
     private int mRequestCreatorType;
+    private boolean mIsBOManager;
 
     public RequestCreationViewModel(AppCompatActivity activity,
-            @RequestCreatorType int requestCreatorType) {
+        @RequestCreatorType int requestCreatorType) {
         mActivity = activity;
         mContext = activity.getApplicationContext();
         mRequestCreatorType = requestCreatorType;
@@ -165,7 +169,11 @@ public class RequestCreationViewModel extends BaseObservable
 
     @Override
     public void onGetUserSuccess(User user) {
-        setManager(user.getRole().equals(BO_MANAGER));
+        setBOManager(user.getRole().equals(BO_MANAGER));
+        setManager((user.getRole().equals(BO_MANAGER)
+            || user.getRole().equals(GROUP_LEADER)
+            || user.getRole().equals(DIVISION_MANAGER)
+            || user.equals(SECTION_MANAGER)));
         if (isManager()) {
             if (mRequestCreatorType == RequestCreatorType.MY_REQUEST) {
                 setRequestFor(new Status(user.getId(), user.getName()));
@@ -280,7 +288,7 @@ public class RequestCreationViewModel extends BaseObservable
 
     public void onClickChooseRequestForRelativeStaff() {
         mActivity.startActivityForResult(SelectRequestForActivity.getInstance(mContext),
-                REQUEST_RELATIVE);
+            REQUEST_RELATIVE);
     }
 
     public void updateDefaultAssignee() {
@@ -291,7 +299,7 @@ public class RequestCreationViewModel extends BaseObservable
 
     public void onClickAssignee() {
         mActivity.startActivityForResult(SelectAssigneeRequestActivity.getInstance(mContext),
-                REQUEST_ASSIGNEE);
+            REQUEST_ASSIGNEE);
     }
 
     @Bindable
@@ -333,5 +341,15 @@ public class RequestCreationViewModel extends BaseObservable
     public void setGroupError(String groupError) {
         mGroupError = groupError;
         notifyPropertyChanged(BR.groupError);
+    }
+
+    @Bindable
+    public boolean isBOManager() {
+        return mIsBOManager;
+    }
+
+    public void setBOManager(boolean BOManager) {
+        mIsBOManager = BOManager;
+        notifyPropertyChanged(BR.bOManager);
     }
 }

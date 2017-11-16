@@ -130,6 +130,7 @@
                         android:layout_marginTop="@dimen/dp_10"
                         android:paddingTop="@dimen/dp_10"
                         android:textColorHint="@color/color_brown"
+                        android:visibility="@{viewModel.bOManager ? View.VISIBLE : View.GONE}"
                         >
                         <android.support.design.widget.TextInputEditText
                             android:layout_width="match_parent"

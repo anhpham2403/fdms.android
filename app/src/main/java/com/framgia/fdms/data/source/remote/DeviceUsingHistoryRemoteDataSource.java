@@ -32,7 +32,7 @@ import static com.framgia.fdms.utils.Constant.ApiParram.PAGE;
 import static com.framgia.fdms.utils.Constant.ApiParram.PER_PAGE;
 import static com.framgia.fdms.utils.Constant.ApiParram.STATUS;
 import static com.framgia.fdms.utils.Constant.ApiParram.TEXT_USER_SEARCH;
-import static com.framgia.fdms.utils.Constant.ApiParram.USING_HISTORY_DEVICE_CODE;
+import static com.framgia.fdms.utils.Constant.ApiParram.TEXT_DEVICE_SEARCH;
 import static com.framgia.fdms.utils.Constant.OUT_OF_INDEX;
 
 /**
@@ -118,7 +118,7 @@ public class DeviceUsingHistoryRemoteDataSource extends BaseRemoteDataSource
             param.put(TEXT_USER_SEARCH, filter.getStaffName());
         }
         if (!TextUtils.isEmpty(filter.getDeviceCode())) {
-            param.put(USING_HISTORY_DEVICE_CODE, filter.getDeviceCode());
+            param.put(TEXT_DEVICE_SEARCH, filter.getDeviceCode());
         }
 
         return param;

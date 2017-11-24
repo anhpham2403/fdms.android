@@ -141,7 +141,7 @@ public class Constant {
             "device_category[device_group_id]";
         public static final String STATUS = "status";
         public static final String TEXT_USER_SEARCH = "text_user_search";
-        public static final String USING_HISTORY_DEVICE_CODE = "device_code";
+        public static final String TEXT_DEVICE_SEARCH  = "text_device_search";
         public static final String BRANCH_ID = "branch_id";
     }
 

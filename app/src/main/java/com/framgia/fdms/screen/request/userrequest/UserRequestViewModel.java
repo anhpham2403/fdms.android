@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-
 import com.framgia.fdms.BR;
 import com.framgia.fdms.BaseFragmentContract;
 import com.framgia.fdms.BaseFragmentModel;
@@ -34,15 +33,17 @@ import com.framgia.fdms.screen.selection.SelectionActivity;
 import com.framgia.fdms.utils.navigator.Navigator;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.yarolegovich.lovelydialog.LovelyTextInputDialog;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
-import static com.framgia.fdms.screen.request.userrequest.UserRequestViewModel.RequestManagerViewType.ALL_REQUESTS;
-import static com.framgia.fdms.screen.request.userrequest.UserRequestViewModel.RequestManagerViewType.REQUESTS_BY_ME;
-import static com.framgia.fdms.screen.request.userrequest.UserRequestViewModel.RequestManagerViewType.REQUEST_FOR_ME;
+import static com.framgia.fdms.screen.request.userrequest.UserRequestViewModel
+    .RequestManagerViewType.ALL_REQUESTS;
+import static com.framgia.fdms.screen.request.userrequest.UserRequestViewModel
+    .RequestManagerViewType.REQUESTS_BY_ME;
+import static com.framgia.fdms.screen.request.userrequest.UserRequestViewModel
+    .RequestManagerViewType.REQUEST_FOR_ME;
 import static com.framgia.fdms.screen.requestcreation.RequestCreatorType.MY_REQUEST;
 import static com.framgia.fdms.screen.selection.SelectionType.REQUEST_CREATED_BY;
 import static com.framgia.fdms.screen.selection.SelectionType.STATUS_REQUEST_ALL;
@@ -60,8 +61,8 @@ import static com.framgia.fdms.utils.Constant.RequestConstant.REQUEST_STATUS;
  */
 
 public class UserRequestViewModel extends BaseFragmentModel
-        implements UserRequestContract.ViewModel, OnRequestClickListenner,
-        DatePickerDialog.OnDateSetListener,AdapterView.OnItemSelectedListener{
+    implements UserRequestContract.ViewModel, OnRequestClickListenner,
+    DatePickerDialog.OnDateSetListener, AdapterView.OnItemSelectedListener {
 
     private final Context mContext;
     private final Fragment mFragment;
@@ -76,13 +77,13 @@ public class UserRequestViewModel extends BaseFragmentModel
     private String mToTime;
     private boolean mFlagTime;
     private SwipeRefreshLayout.OnRefreshListener mRefreshLayout =
-            new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    mAdapter.clear();
-                    getData();
-                }
-            };
+        new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mAdapter.clear();
+                getData();
+            }
+        };
 
     private int mScrollPosition;
     private ArrayAdapter<String> mRequestTypeAdapter;
@@ -107,11 +108,11 @@ public class UserRequestViewModel extends BaseFragmentModel
     private void initRequestTypeAdapter() {
         List<String> requestTypes = new ArrayList<>();
         requestTypes.add(ALL_REQUESTS,
-                mFragment.getContext().getString(R.string.title_all_requests));
+            mFragment.getContext().getString(R.string.title_all_requests));
         requestTypes.add(REQUESTS_BY_ME,
-                mFragment.getContext().getString(R.string.title_request_by_me));
+            mFragment.getContext().getString(R.string.title_request_by_me));
         requestTypes.add(REQUEST_FOR_ME,
-                mFragment.getContext().getString(R.string.title_request_for_me));
+            mFragment.getContext().getString(R.string.title_request_for_me));
         mRequestTypeAdapter = new ArrayAdapter<>(mContext, R.layout.item_group, requestTypes);
     }
 
@@ -154,8 +155,8 @@ public class UserRequestViewModel extends BaseFragmentModel
     @Override
     public void onRegisterRequestClick() {
         mFragment.startActivityForResult(
-                RequestCreationActivity.getInstance(mFragment.getActivity(), MY_REQUEST),
-                REQUEST_CREATE_REQUEST);
+            RequestCreationActivity.getInstance(mFragment.getActivity(), MY_REQUEST),
+            REQUEST_CREATE_REQUEST);
     }
 
     @Override
@@ -194,8 +195,7 @@ public class UserRequestViewModel extends BaseFragmentModel
                 mPresenter.getData(mRelative, mStatus, null);
                 break;
             case REQUEST_DETAIL:
-                Request request =
-                        (Request) bundle.getSerializable(BUNDLE_RESPONE);
+                Request request = (Request) bundle.getSerializable(BUNDLE_RESPONE);
                 if (request != null) {
                     onUpdateActionSuccess(request);
                 }
@@ -227,6 +227,8 @@ public class UserRequestViewModel extends BaseFragmentModel
         if (request == null) {
             return;
         }
+        Toast.makeText(mContext, mContext.getString(R.string.msg_update_request_success),
+            Toast.LENGTH_SHORT).show();
         mAdapter.updateItem(request);
     }
 
@@ -245,13 +247,13 @@ public class UserRequestViewModel extends BaseFragmentModel
 
     public void onSelectStatusClick() {
         mFragment.startActivityForResult(
-                SelectionActivity.getInstance(mContext, STATUS_REQUEST_ALL), REQUEST_STATUS);
+            SelectionActivity.getInstance(mContext, STATUS_REQUEST_ALL), REQUEST_STATUS);
     }
 
     public void onSelectTypeRequestClick() {
         mFragment.startActivityForResult(
-                SelectionActivity.getInstance(mContext, REQUEST_CREATED_BY),
-                REQUEST_REQUEST_CREATED_BY);
+            SelectionActivity.getInstance(mContext, REQUEST_CREATED_BY),
+            REQUEST_REQUEST_CREATED_BY);
     }
 
     @Bindable
@@ -277,8 +279,8 @@ public class UserRequestViewModel extends BaseFragmentModel
     @Override
     public void onMenuClick(View v, final UserRequestAdapter.RequestModel request) {
         if (request == null
-                || request.getRequest() == null
-                || request.getRequest().getRequestActionList() == null) {
+            || request.getRequest() == null
+            || request.getRequest().getRequestActionList() == null) {
             return;
         }
         Request requestModel = request.getRequest();
@@ -286,14 +288,14 @@ public class UserRequestViewModel extends BaseFragmentModel
         for (int i = 0; i < requestModel.getRequestActionList().size(); i++) {
             final Request.RequestAction action = requestModel.getRequestActionList().get(i);
             popupMenu.getMenu()
-                    .add(action.getName())
-                    .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem menuItem) {
-                            onActionRequestClick(request.getRequest().getId(), action.getId());
-                            return false;
-                        }
-                    });
+                .add(action.getName())
+                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        onActionRequestClick(request.getRequest().getId(), action.getId());
+                        return false;
+                    }
+                });
         }
         popupMenu.show();
     }
@@ -302,36 +304,35 @@ public class UserRequestViewModel extends BaseFragmentModel
     public void onActionRequestClick(final int reqeuestId, final int actionId) {
         switch (actionId) {
             case RequestStatus.CANCELLED:
-                new LovelyTextInputDialog(mContext)
-                        .setTopColorRes(R.color.colorPrimary)
-                        .setTitle(R.string.msg_cancel_request)
-                        .setIcon(R.drawable.ic_error_white)
-                        .setConfirmButton(android.R.string.ok,
-                                new LovelyTextInputDialog.OnTextInputConfirmListener() {
-                                    @Override
-                                    public void onTextInputConfirmed(String text) {
-                                        if (TextUtils.isEmpty(text)) {
-                                            return;
-                                        }
-                                        ((UserRequestContract.Presenter) mPresenter).cancelRequest(
-                                                reqeuestId, actionId, text);
-                                    }
-                                })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setInputFilter(R.string.error_empty_description,
-                                new LovelyTextInputDialog.TextFilter() {
-                                    @Override
-                                    public boolean check(String s) {
-                                        // TODO: 10/23/2017 test later
-                                        return !TextUtils.isEmpty(s);
-                                    }
-                                })
-                        .setCancelable(false)
-                        .show();
+                new LovelyTextInputDialog(mContext).setTopColorRes(R.color.colorPrimary)
+                    .setTitle(R.string.msg_cancel_request)
+                    .setIcon(R.drawable.ic_error_white)
+                    .setConfirmButton(android.R.string.ok,
+                        new LovelyTextInputDialog.OnTextInputConfirmListener() {
+                            @Override
+                            public void onTextInputConfirmed(String text) {
+                                if (TextUtils.isEmpty(text)) {
+                                    return;
+                                }
+                                ((UserRequestContract.Presenter) mPresenter).cancelRequest(
+                                    reqeuestId, actionId, text);
+                            }
+                        })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setInputFilter(R.string.error_empty_description,
+                        new LovelyTextInputDialog.TextFilter() {
+                            @Override
+                            public boolean check(String s) {
+                                // TODO: 10/23/2017 test later
+                                return !TextUtils.isEmpty(s);
+                            }
+                        })
+                    .setCancelable(false)
+                    .show();
                 break;
             default:
                 ((UserRequestContract.Presenter) mPresenter).updateActionRequest(reqeuestId,
-                        actionId);
+                    actionId);
                 break;
         }
     }
@@ -344,14 +345,14 @@ public class UserRequestViewModel extends BaseFragmentModel
     @Override
     public void onDetailRequestClick(Request request) {
         mFragment.startActivityForResult(
-                RequestDetailActivity.getInstance(mContext, request.getId()), REQUEST_DETAIL);
+            RequestDetailActivity.getInstance(mContext, request.getId()), REQUEST_DETAIL);
     }
 
     @Override
     public void onAddDeviceClick(int requestId) {
         mFragment.startActivityForResult(
-                AssignmentActivity.getInstance(mContext, AssignmentType.ASSIGN_BY_REQUEST, requestId),
-                REQUEST_CREATE_ASSIGNMENT);
+            AssignmentActivity.getInstance(mContext, AssignmentType.ASSIGN_BY_REQUEST, requestId),
+            REQUEST_CREATE_ASSIGNMENT);
     }
 
     @Bindable
@@ -388,8 +389,8 @@ public class UserRequestViewModel extends BaseFragmentModel
             mCalendar = Calendar.getInstance();
         }
         DatePickerDialog datePicker =
-                DatePickerDialog.newInstance(this, mCalendar.get(Calendar.YEAR),
-                        mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
+            DatePickerDialog.newInstance(this, mCalendar.get(Calendar.YEAR),
+                mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
         datePicker.show(mFragment.getActivity().getFragmentManager(), "");
     }
 
@@ -491,7 +492,7 @@ public class UserRequestViewModel extends BaseFragmentModel
 
     }
 
-    @IntDef({ALL_REQUESTS, REQUESTS_BY_ME, REQUEST_FOR_ME})
+    @IntDef({ ALL_REQUESTS, REQUESTS_BY_ME, REQUEST_FOR_ME })
     public @interface RequestManagerViewType {
         int ALL_REQUESTS = 0;
         int REQUESTS_BY_ME = 1;

@@ -193,6 +193,9 @@ public class RequestInformationViewModel extends BaseObservable
     }
 
     public void onClickAssignee() {
+        if(!isEdit()){
+            return;
+        }
         mFragment.startActivityForResult(
             SelectionActivity.getInstance(mContext, SelectionType.ASSIGNEE), REQUEST_ASSIGNEE);
     }
